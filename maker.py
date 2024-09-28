@@ -92,7 +92,7 @@ def calculate_and_send_orders(account: MyAccount, logic_state: State,trade_api):
     model_state.count+=1
     current_time=datetime.now()
     assets=[model_state.count,account.balance.total,current_time]
-    write_to_csv([assets])
+    # write_to_csv([assets])
     print(account.balance.total)
     print('order sent')
         # else:
@@ -170,9 +170,9 @@ def routine_schedule(model_state: ModelState,data_api,trade_api):
                 schedule_second[maker_config["time_offset"]] = [market]
 
         for second, markets in schedule_second.items():
-            schedule.every().minute.at(":%02d" % second).do(main, model_state, markets,data_api,trade_api)
+            schedule.every(1).minutes.at(":%02d" % second).do(main, model_state, markets,data_api,trade_api)
 
-        schedule.every().minute.at(":00").do(riskmanagement, model_state.account,'USDT',trade_api)
+        schedule.every(1).minutes.at(":00").do(riskmanagement, model_state.account,'USDT',trade_api)
         # schedule.every(15).minutes.at(":00").do(log_trades, my_client, model_state)
     except Exception as e:
         print(e)
