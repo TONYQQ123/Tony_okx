@@ -11,30 +11,6 @@
   ,
   "maker_config": [
     {
-      "market": "DOGE-USDT-SWAP",
-      "strategy_id": "DOGE_cd",
-      "logic_id": "cd",
-      "time_offset": 0,
-      "strategy_config": {
-        "leverage": 1.0,
-        "weight": 0.05,
-        "logic_id": "cd",
-        "resend_type": "resend_every_time",
-        "spread": [0.0025, 0.005],
-        "position_size": [0.1, 0.15],
-        "bias": 0.001,
-        "cd_length": 60.0,
-        "cd_vol_multi": 7.0,
-        "cd_vol_ma_length": 30.0,
-        "cd_vol_floor": 0.03,
-        "sizing_factor": 1.0,
-        "spread_diff": 0.0,
-        "min_order":10,
-        "one_sz":10
-
-      }
-    },
-    {
       "market": "ETH-USDT-SWAP",
       "strategy_id": "ETH_cd",
       "logic_id": "cd",
@@ -55,29 +31,6 @@
         "spread_diff": 0.0,
         "min_order":0.5,
         "one_sz":0.5
-      }
-    },
-    {
-      "market": "PEPE-USDT-SWAP",
-      "strategy_id": "PEPE_cd",
-      "logic_id": "cd",
-      "time_offset": 0,
-      "strategy_config": {
-        "weight": 0.07,
-        "leverage": 1.0,
-        "logic_id": "cd",
-        "resend_type": "resend_every_time",
-        "spread": [0.0025, 0.005],
-        "position_size": [0.1, 0.15],
-        "bias": 0.0006,
-        "cd_length": 15.0,
-        "cd_vol_multi": 5.0,
-        "cd_vol_ma_length": 180.0,
-        "cd_vol_floor": 0.04,
-        "sizing_factor": 1.0,
-        "spread_diff": 0.0,
-        "min_order":0.1,
-        "one_sz":0.1
       }
     },
     {
