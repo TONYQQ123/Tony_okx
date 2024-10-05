@@ -92,7 +92,7 @@ def calculate_and_send_orders(account: MyAccount, logic_state: State,trade_api):
     model_state.count+=1
     current_time=datetime.now()
     assets=[model_state.count,account.balance.total,current_time]
-    write_to_csv([assets])
+    # write_to_csv([assets])
     print(account.balance.total)
     print('order sent')
         # else:

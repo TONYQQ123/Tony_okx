@@ -147,7 +147,7 @@
         "sizing_factor": 1.0,
         "spread_diff": 0.0,
         "min_order":5,
-        "one_sz":5
+        "one_sz":0.2
       }
     }
     
