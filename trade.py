@@ -5,8 +5,8 @@ import time
 def place_limit(api,orders)->None:
     for order in orders:
         if order['size']==0:
-            print(order)
-            print('無法下單')
+            # print(order)
+            # print('無法下單')
             continue
         result=api.place_order(
             instId=order['symbol'],
@@ -18,13 +18,14 @@ def place_limit(api,orders)->None:
             sz=str(order['size'])
         )
         a=order['size']
-        print(a)
+        # print(a)
         if result['code']=='0':
-            print(order)
+            pass
+            # print(order)
             print('下單成功')
         else:
-            print(order)
-            print(a)
+            # print(order)
+            # print(a)
             print('下單失敗',result)
     
 def cancel_allOrders(api)->None:
@@ -43,10 +44,12 @@ def cancel_allOrders(api)->None:
         if response['code'] == '0':
             print("订单取消成功！")
         else:
-            print("取消订单时出错：", response['msg'])
+            # print("取消订单时出错：", response['msg'])
+            print("取消订单时出错")
 
-def cancel_allPosition(api)->None:
-    positions = api.get_positions()
+def cancel_allPosition(trade_api,account_api)->None:
+    positions = account_api.get_positions()
+    positions=positions['data']
     i=0
     for position in positions:
         i+=1
@@ -55,15 +58,17 @@ def cancel_allPosition(api)->None:
             i=0
         instId = position['instId']
         mgnMode = position['mgnMode']
-        response = api.close_positions(instId, mgnMode)
-    if response['code'] == '0':
-        print(f"成功关闭仓位：{instId}")
-    else:
-        print(f"关闭仓位失败：{instId}，错误信息：{response['msg']}")
+        response = trade_api.close_positions(instId, mgnMode)
+    # if response['code'] == '0':
+    #     pass
+    #     # print(f"成功关闭仓位：{instId}")
+    # else:
+    #     # print(f"关闭仓位失败：{instId}，错误信息：{response['msg']}")
+    #     pass
 
-def cancel_and_unwind_all(api)->None:
-    cancel_allOrders(api)
-    cancel_allPosition(api)
+def cancel_and_unwind_all(trade_api,account_api)->None:
+    cancel_allOrders(trade_api)
+    cancel_allPosition(trade_api,account_api)
 
 
 

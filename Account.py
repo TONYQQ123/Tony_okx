@@ -38,7 +38,7 @@ class MyAccount:
     
     def get_inventory(self,symbol,trade_type)->float:
         temp = self.account_api.get_positions(instType=trade_type, instId=symbol)
-        print(temp)
+        # print(temp)
         if temp['code']=='0':
             if temp['data']==[]:
                 return 0
@@ -47,7 +47,7 @@ class MyAccount:
                 return 0
             posSide=temp.get('PosSide')
             if posSide==None:
-                print('還無交易過')
+                # print('還無交易過')
                 return 0
             pos=temp['pos']
             if posSide=='net':
@@ -55,7 +55,8 @@ class MyAccount:
             elif posSide=='short':
                 return float(pos)*-1
         else:
-            print('取得inventory失敗: ',temp,trade_type,symbol)
+            # print('取得inventory失敗: ',temp,trade_type,symbol)
+            print('取得inventory失敗')
             return None
     
     def get_balance(self,symbol):

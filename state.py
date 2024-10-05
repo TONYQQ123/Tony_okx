@@ -11,8 +11,11 @@ class State:
         self.last_close=None
         self.interval=0.2
         self.timestamp=None
-        self.create_vec()
-        self.create_state()
+        try:
+            self.create_vec()
+            self.create_state()
+        except Exception as e:
+            print('錯誤State')
         self.config=strategy_config
 
     def update_data(self,data_api,trade_type):
@@ -20,10 +23,11 @@ class State:
         data= Data.get_data(self.symbol,data_api,trade_type)
         if data is not None:
             self.price=float(data['price'])
-            print(f"Updated price for {self.symbol}: {self.price}")
+            # print(f"Updated price for {self.symbol}: {self.price}")
             self.timestamp=datetime.fromtimestamp(int(data['timestamp'])/1000)
         else:
-            print(f"Updated {self.symbol} Failed!")
+            pass
+            # print(f"Updated {self.symbol} Failed!")
     
     def create_state(self):
         self.cd_direction = ""
@@ -72,8 +76,11 @@ class State:
 
 class OrderChain:
     def __init__(self, account, logic_state: State):
-        self.orders = self.create_order_chain(account,logic_state)
-        self.order_constraint(account, logic_state.symbol,logic_state)
+        try:
+            self.orders = self.create_order_chain(account,logic_state)
+            self.order_constraint(account, logic_state.symbol,logic_state)
+        except Exception as e:
+            print('錯誤OrderChain')
 
     def update_order_chain(
         self, account, logic_state: State
@@ -212,9 +219,9 @@ class OrderChain:
             orders += buys
             orders += sells
 
-        for i in orders:
-            if i["price"] < 0:
-                print(long_bias)
+        # for i in orders:
+        #     if i["price"] < 0:
+        #         print(long_bias)
             # import sys
             # sys.exit()
         return orders
@@ -238,7 +245,7 @@ class OrderChain:
                     remove_orders.append(order)
         if len(remove_orders) > 0:
             for order in remove_orders:
-                print("Remove order:", order)
+                # print("Remove order:", order)
                 self.orders.remove(order)
 
 if __name__=='__main__':

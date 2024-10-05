@@ -15,7 +15,8 @@ def data(symbol,api,trade_type):
     marketDataAPI = api
     result = marketDataAPI.get_ticker(instId=symbol)
     if result['code']!='0':
-        print('錯誤: ',result,'幣: ',symbol)
+        print('取得資料失敗')
+        # print('錯誤: ',result,'幣: ',symbol)
         return None
     result=result['data'][0]
     instType = result['instType']
@@ -36,7 +37,7 @@ def data(symbol,api,trade_type):
     sodUtc8 = result['sodUtc8']
 
     data={'symbol':instId,'price':last,'size':lastSz,'timestamp':ts}
-    print(data)
+    # print(data)
     return data
 
 if __name__=='__main__':

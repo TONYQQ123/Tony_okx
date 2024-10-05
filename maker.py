@@ -76,7 +76,6 @@ def write_to_csv(data):
 
 
 def calculate_and_send_orders(account: MyAccount, logic_state: State,trade_api):
-    order_chain = OrderChain(account,logic_state)
         # print(order_chain.orders)
         # send orders
             # try:
@@ -84,21 +83,22 @@ def calculate_and_send_orders(account: MyAccount, logic_state: State,trade_api):
             # except:
             #     pass
     try:
-            cancel_allOrders(trade_api)
-    except:
-        pass
-    print('開始下單')
-    place_limit(trade_api, order_chain.orders)
-    model_state.count+=1
-    current_time=datetime.now()
-    assets=[model_state.count,account.balance.total,current_time]
-    # write_to_csv([assets])
-    print(account.balance.total)
-    print('order sent')
-        # else:
-        #     res = exchange_api.create_basket_limit_orders2(account.okx,order_chain.orders)
-            
-        #     logging.info(res)
+        order_chain = OrderChain(account,logic_state)
+        cancel_allOrders(trade_api)
+        print('開始下單')
+        place_limit(trade_api, order_chain.orders)
+        model_state.count+=1
+        current_time=datetime.now()
+        assets=[model_state.count,account.balance.total,current_time]
+        # write_to_csv([assets])
+        # print(account.balance.total)
+        print('order sent')
+            # else:
+            #     res = exchange_api.create_basket_limit_orders2(account.okx,order_chain.orders)
+                
+            #     logging.info(res)
+    except Exception as e:
+        print('計算單錯誤')
 
 def main(model_state: ModelState, markets: list,data_api,trade_api):
         # cancel all orders (multi-threads)
@@ -144,11 +144,11 @@ def main(model_state: ModelState, markets: list,data_api,trade_api):
         )
     run_threads(threads, timeout=10)
 
-def riskmanagement(account: MyAccount,symbol,trade_api):
+def riskmanagement(account: MyAccount,symbol,trade_api,account_api):
     current_balance = account.get_balance(symbol)
     risk_ratio = account.risk_alert
     if current_balance < account.inital_capital *(1-risk_ratio):
-        cancel_and_unwind_all(trade_api)
+        cancel_and_unwind_all(trade_api,account_api)
         print(f"{round(risk_ratio * 100,2)}% RISK ALERT !")
         current_pid = os.getpid()
         try:
@@ -160,7 +160,7 @@ def riskmanagement(account: MyAccount,symbol,trade_api):
             os._exit(0)
 
 
-def routine_schedule(model_state: ModelState,data_api,trade_api):
+def routine_schedule(model_state: ModelState,data_api,trade_api,account_api):
     try:
         schedule_second = {}
         for market, maker_config in model_state.maker_config.items():
@@ -170,12 +170,13 @@ def routine_schedule(model_state: ModelState,data_api,trade_api):
                 schedule_second[maker_config["time_offset"]] = [market]
 
         for second, markets in schedule_second.items():
-            schedule.every(1).minutes.at(":%02d" % second).do(main, model_state, markets,data_api,trade_api)
+            # schedule.every(10).seconds.at(":%02d" % second).do(main, model_state, markets,data_api,trade_api)
+            schedule.every(20).seconds.do(main, model_state, markets,data_api,trade_api)
 
-        schedule.every(1).minutes.at(":00").do(riskmanagement, model_state.account,'USDT',trade_api)
+        schedule.every(1).minutes.at(":00").do(riskmanagement, model_state.account,'USDT',trade_api,account_api)
         # schedule.every(15).minutes.at(":00").do(log_trades, my_client, model_state)
     except Exception as e:
-        print(e)
+        print('排成錯誤',e)
 
 
 if __name__=='__main__':
@@ -187,7 +188,7 @@ if __name__=='__main__':
     account=MyAccount(setting)
     model_state=ModelState(setting,account,marketDataAPI)
     main(model_state,model_state.markets,marketDataAPI,tradeAPI)
-    routine_schedule(model_state,marketDataAPI,tradeAPI)
+    routine_schedule(model_state,marketDataAPI,tradeAPI,account.account_api)
 
     stop_requested = False
     stop_lock = threading.Lock()
@@ -198,7 +199,7 @@ if __name__=='__main__':
                 with stop_lock:
                     global stop_requested
                     stop_requested=True
-                cancel_and_unwind_all(trade_api)
+                cancel_and_unwind_all(trade_api,account.account_api)
                 break
 
     key_input=threading.Thread(target=key,args=(tradeAPI,))
@@ -211,3 +212,4 @@ if __name__=='__main__':
             stop_requested = True
         except Exception as exception:
             print(f"Continuing after problem running market-making iteration: {exception}")
+            break
